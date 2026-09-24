@@ -1,5 +1,8 @@
 # Deploying Aira infrastructure
 
+For runner setup and deployment through GitLab, see [the CI/CD guide](gitlab-ci.md).
+The commands below also provide the one-time bootstrap and local workflow.
+
 Run commands from the repository root unless a step says otherwise. Use OpenTofu
 1.11 or newer within major version 1; local verification uses 1.12.5. AzureRM is
 constrained to 4.67.x. AWS is constrained to major version 6, with the exact version

@@ -29,3 +29,10 @@ backend.hcl
 .provider-cache/
 modules/**/.terraform.lock.hcl
 blueprints/**/.terraform.lock.hcl
+
+# CI job-local working data, saved plans, and local validation dependencies
+.ci-work/
+.ci-plan/
+.ci-tools/
+__pycache__/
+*.pyc

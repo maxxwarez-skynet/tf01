@@ -1,0 +1,23 @@
+{
+  "azure-aira-dev-foundation": {
+    "root": "live/azure/aira/dev/centralindia/foundation",
+    "requires": []
+  },
+  "azure-aira-dev-data": {
+    "root": "live/azure/aira/dev/centralindia/data",
+    "requires": [
+      "azure-aira-dev-foundation"
+    ]
+  },
+  "azure-aira-dev-application": {
+    "root": "live/azure/aira/dev/centralindia/application",
+    "requires": [
+      "azure-aira-dev-foundation",
+      "azure-aira-dev-data"
+    ]
+  },
+  "aws-aira-dev-recordings": {
+    "root": "live/aws/aira/dev/ap-south-1/recordings",
+    "requires": []
+  }
+}

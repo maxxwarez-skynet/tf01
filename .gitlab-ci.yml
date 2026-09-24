@@ -1,0 +1,88 @@
+stages:
+  - validate
+  - plan
+  - apply
+
+workflow:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH'
+    - when: never
+
+default:
+  # Linux shell executor: install OpenTofu and Python on the runner host.
+  # If your runner requires tags, add its actual tags here.
+  interruptible: true
+  before_script:
+    - python3 ci/run.py check
+
+variables:
+  GIT_STRATEGY: clone
+  TF_IN_AUTOMATION: "true"
+  TF_INPUT: "false"
+  RUN_DEPLOYMENT:
+    value: "false"
+    options: ["false", "true"]
+    description: "Set true in Run pipeline on the protected default branch to enable plan/apply."
+  DEPLOY_TARGET:
+    value: "azure-aira-dev-foundation"
+    description: "A target ID from ci/targets.json."
+  AZURE_AUTH_MODE: "oidc"
+  AWS_AUTH_MODE: "oidc"
+
+validate:
+  stage: validate
+  script:
+    - python3 ci/run.py validate
+    - python3 -m unittest discover -s ci/tests -v
+
+test:
+  stage: validate
+  script:
+    - python3 ci/run.py test
+
+.deployment:
+  rules:
+    - if: '$RUN_DEPLOYMENT == "true" && $CI_PIPELINE_SOURCE == "web" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_REF_PROTECTED == "true"'
+    - when: never
+  # Use the same target ID for jobs touching the same state.
+  resource_group: $DEPLOY_TARGET
+  id_tokens:
+    AZURE_ID_TOKEN:
+      aud: api://AzureADTokenExchange
+    AWS_ID_TOKEN:
+      aud: sts.amazonaws.com
+  interruptible: false
+  timeout: 3h
+
+plan:
+  extends: .deployment
+  stage: plan
+  needs: [validate, test]
+  environment:
+    name: $DEPLOY_TARGET
+    action: prepare
+  script:
+    - python3 ci/run.py plan
+  artifacts:
+    name: "plan-$DEPLOY_TARGET-$CI_PIPELINE_ID"
+    access: developer
+    expire_in: 1 hour
+    paths:
+      - .ci-plan/
+
+apply:
+  extends: .deployment
+  stage: apply
+  needs:
+    - job: plan
+      artifacts: true
+  when: manual
+  allow_failure: false
+  environment:
+    name: $DEPLOY_TARGET
+  script:
+    - python3 ci/run.py apply

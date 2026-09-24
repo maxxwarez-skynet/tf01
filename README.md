@@ -44,6 +44,9 @@ live/azure/aira/dev/centralindia/
   application/               VMs, public IPs, NSGs, vault-read role assignments
 live/aws/aira/dev/ap-south-1/recordings/
 scripts/validate.ps1          Local validation and mocked tests
+.gitlab-ci.yml               Linux shell-runner pipeline
+ci/targets.json              Deployment targets and prerequisites
+ci/run.py                    CI validation, planning, and saved-plan application
 docs/deployment.md           Bootstrap and deployment runbook
 ```
 
@@ -55,6 +58,14 @@ once state storage exists. Module inputs and outputs are defined in each module'
 All initial states, including the AWS recordings state, use the Azure Blob backend
 created by bootstrap. This avoids a second bootstrap solely for one S3 bucket.
 This is an explicit operating choice, not a requirement for future AWS installations.
+
+## GitLab CI/CD
+
+The Linux shell-runner pipeline runs validation and mocked tests on branch/MR
+pipelines. Manually started deployment pipelines on the protected default branch
+plan one selected component, then offer a manual apply of that exact saved plan.
+See [GitLab setup and required CI variables](docs/gitlab-ci.md). Targets are listed
+in `ci/targets.json`; additional installations reuse the same jobs.
 
 ## Start here
 
@@ -83,8 +94,8 @@ Azure/AWS and do not create resources. They do not establish regional capacity,
 subscription quota, actual connectivity, or restore success.
 
 Provider versions are constrained and each deployment root has a dependency lock
-file. Commit those lock files. Official HashiCorp registry addresses are explicit
-so OpenTofu resolves the intended provider source consistently.
+file. Commit those lock files. OpenTofu registry addresses are explicit so the CLI and read-only CI lock checks
+resolve the same provider sources.
 
 ## Replication and expansion
 
