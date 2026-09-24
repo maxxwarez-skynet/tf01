@@ -1,0 +1,49 @@
+{
+  "deployment_id": "aira",
+  "product": "aira",
+  "environment": "dev",
+  "location": "centralindia",
+  "zone": "1",
+  "address_space": [
+    "10.0.0.0/16"
+  ],
+  "subnets": {
+    "web": "10.0.1.0/24",
+    "data": "10.0.2.0/24",
+    "cache": "10.0.3.0/24"
+  },
+  "admin_username": "airaadmin",
+  "image": {
+    "publisher": "Canonical",
+    "offer": "ubuntu-24_04-lts",
+    "sku": "server"
+  },
+  "mysql": {
+    "sku": "B_Standard_B1ms",
+    "version": "8.0.21",
+    "storage_gb": 20,
+    "backup_retention_days": 7,
+    "admin_username": "airaadmin"
+  },
+  "redis": {
+    "sku": "Balanced_B0"
+  },
+  "machines": {
+    "frontend": {
+      "suffix": "fe-01",
+      "size": "Standard_B2ms",
+      "public_ports": [
+        80,
+        443
+      ]
+    },
+    "ai": {
+      "suffix": "agent-01",
+      "size": "Standard_B2ms",
+      "public_ports": [
+        80,
+        443
+      ]
+    }
+  }
+}

@@ -1,0 +1,31 @@
+# Local document inspection dependencies and rendered references
+.tmp-pdf/
+
+# Terraform working directories and potentially sensitive local artifacts
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+*.tfplan
+crash.log
+crash.*.log
+*.tfvars
+*.tfvars.json
+!*.example.tfvars
+!*.example.tfvars.json
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
+.env
+.env.*
+!.env.example
+
+# Commit .terraform.lock.hcl files for deployment roots.
+
+# Local backend coordinates, provider cache, and module validation locks
+backend.hcl
+.provider-cache/
+modules/**/.terraform.lock.hcl
+blueprints/**/.terraform.lock.hcl
